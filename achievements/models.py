@@ -20,6 +20,8 @@ class User(models.Model):
     linked_student_id = models.ForeignKey(
         StudentAchievement, null=True, blank=True, on_delete=models.SET_NULL
     )
+    security_question = models.CharField(max_length=255, null=True, blank=True)
+    security_answer = models.CharField(max_length=255, null=True, blank=True)
 
     def set_password(self, raw_password):
         self.password = bcrypt.hashpw(raw_password.encode(), bcrypt.gensalt()).decode()

@@ -30,6 +30,52 @@ def login(request):
     return JsonResponse({"error": "Invalid request"}, status=405)
 
 
+@csrf_exempt
+def forgot_password(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        email = data.get("email")
+
+        try:
+            user = User.objects.get(email=email)
+
+            return JsonResponse(
+                {"security_question": f"Your question is: {user.security_question}"},
+                status=200,
+            )
+        except User.DoesNotExist:
+            return JsonResponse({"error": "User does not exist"}, status=400)
+
+    return JsonResponse({"error": "Invalid request"}, status=405)
+
+
+@csrf_exempt
+def reset_password(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        email = data.get("email")
+        security_answer = data.get("security_answer")
+        new_password = data.get("new_password")
+
+        try:
+            user = User.objects.get(email=email)
+
+            if user.security_answer == security_answer:
+                user.set_password(new_password)
+                user.save()
+                token = generate_jwt(user)
+
+                return JsonResponse(
+                    {"message": "Password reset successful", "token": token}, status=200
+                )
+            else:
+                return JsonResponse({"error": "Incorrect security answer"}, status=400)
+        except User.DoesNotExist:
+            return JsonResponse({"error": "User does not exist"}, status=400)
+
+    return JsonResponse({"error": "Invalid request"}, status=405)
+
+
 @jwt_required
 def school_dashboard(request):
     user_data = request.user_data
