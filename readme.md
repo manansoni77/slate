@@ -29,7 +29,7 @@ cd slate
 ### 2️⃣ Install the required libraries
 
 ```bash
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 ### 3️⃣ Install the required libraries
